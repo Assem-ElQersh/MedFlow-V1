@@ -1,0 +1,135 @@
+version: '3.8'
+
+# IMPORTANT: This docker-compose.yml requires a .env file in the same directory
+# Copy env_variables.txt to .env and modify as needed
+# Example: cp env_variables.txt .env
+
+services:
+  # Database Services
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  # Backend Services
+  api-gateway:
+    build: ./backend/api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
+      - REDIS_URL=${REDIS_URL_DOCKER}
+      - MINIO_URL=${MINIO_URL_DOCKER}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    volumes:
+      - ./backend/api-gateway:/app
+
+  patient-service:
+    build: ./backend/patient-service
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
+      - REDIS_URL=${REDIS_URL_DOCKER}
+    depends_on:
+      - postgres
+      - redis
+
+  triage-service:
+    build: ./backend/triage-service
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
+      - REDIS_URL=${REDIS_URL_DOCKER}
+      - AI_SERVICE_URL=${AI_SERVICE_URL}
+    depends_on:
+      - postgres
+      - redis
+
+  imaging-service:
+    build: ./backend/imaging-service
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
+      - MINIO_URL=${MINIO_URL_DOCKER}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - AI_SERVICE_URL=${AI_SERVICE_URL}
+    depends_on:
+      - postgres
+      - minio
+
+  clinical-service:
+    build: ./backend/clinical-service
+    ports:
+      - "8004:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
+      - REDIS_URL=${REDIS_URL_DOCKER}
+      - AI_SERVICE_URL=${AI_SERVICE_URL}
+    depends_on:
+      - postgres
+      - redis
+
+  ai-service:
+    build: ./backend/ai-service
+    ports:
+      - "8005:8000"
+    environment:
+      - MODEL_CACHE_DIR=${MODEL_CACHE_DIR}
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+    volumes:
+      - ./models:/app/models
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data: 

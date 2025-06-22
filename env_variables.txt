@@ -1,0 +1,57 @@
+# =============================================================================
+# MEDFLOW ENVIRONMENT VARIABLES
+# =============================================================================
+# 
+# INSTRUCTIONS:
+# 1. Copy this entire file content
+# 2. Create a new file named ".env" in your project root directory
+# 3. Paste all the content below into the .env file
+# 4. Modify the values as needed for your setup
+# 5. Save the .env file
+#
+# SECURITY: The .env file will be ignored by git (protected by .gitignore)
+# 
+# =============================================================================
+
+# Database Configuration
+POSTGRES_DB=medflow
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres123
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+
+# MinIO Object Storage Configuration
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin123
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin123
+MINIO_URL=localhost:9000
+
+# Database URLs
+DATABASE_URL=postgresql://postgres:postgres123@localhost:5432/medflow
+DATABASE_URL_DOCKER=postgresql://postgres:postgres123@postgres:5432/medflow
+
+# Service URLs
+REDIS_URL_DOCKER=redis://redis:6379
+MINIO_URL_DOCKER=minio:9000
+
+# AI Service Configuration
+HUGGINGFACE_TOKEN=hf_your_token_here
+MODEL_CACHE_DIR=/app/models
+
+# Frontend Configuration  
+REACT_APP_API_URL=http://localhost:8000
+
+# Service Ports
+API_GATEWAY_PORT=8000
+PATIENT_SERVICE_PORT=8001
+TRIAGE_SERVICE_PORT=8002
+IMAGING_SERVICE_PORT=8003
+CLINICAL_SERVICE_PORT=8004
+AI_SERVICE_PORT=8005
+FRONTEND_PORT=3000
+
+# AI Service URLs (for inter-service communication)
+AI_SERVICE_URL=http://ai-service:8000
+AI_SERVICE_URL_LOCAL=http://localhost:8005
