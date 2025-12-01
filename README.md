@@ -271,27 +271,6 @@ serve -s frontend/build -l 3000
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## ⚠️ **Medical Disclaimer**
-
-**Important**: This system is for demonstration and research purposes only. 
-- Not intended for actual medical diagnosis or treatment
-- AI analysis should not replace professional medical judgment
-- Always consult qualified healthcare professionals for medical decisions
-- Validate all AI outputs before any clinical application
-
-## 🙏 **Acknowledgments**
-
-- **Google DeepMind** for MedGemma 4B IT model
-- **Hugging Face** for model hosting and Gradio demo platform
-- **FastAPI** and **React** communities for excellent frameworks
-- **Medical AI research community** for advancing healthcare technology
-
-## 📞 **Contact & Support**
-
-- **GitHub Issues**: For bug reports and feature requests
-- **Documentation**: See `MEDGEMMA_INTEGRATION.md` for AI integration details
-- **API Documentation**: Available at `/docs` endpoint when running
-
 ---
 
 **Built with ❤️ for advancing AI in healthcare**
